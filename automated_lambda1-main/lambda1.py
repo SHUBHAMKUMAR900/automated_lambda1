@@ -233,26 +233,6 @@ The code will be uploaded to the S3 bucket '{S3_LAMBDA_CODE_BUCKET_TF_REF}' with
 
 Include a source_code_hash (even if placeholder, as GitHub Actions will update it).
 
-#For the ALB:
-
-#Name: {PROJECT_NAME}-alb
-
-#Type: application load balancer, internet-facing.
-
-#Security group should be the one defined previously.
-
-#Subnets: the public subnets defined previously.
-
-#Create a target group (lambda_tg) of type lambda that targets the Lambda function.
-
-#Create an HTTP listener on port 80 that forwards traffic to this target group.
-
-#Grant the ALB permission to invoke the Lambda function using aws_lambda_permission.
-
-#Add an alb_dns_name output.
-
-#Output the complete, updated main.tf file content in the following format:
-
 ### main.tf hcl
 ```hcl
 # Updated main.tf code goes here
