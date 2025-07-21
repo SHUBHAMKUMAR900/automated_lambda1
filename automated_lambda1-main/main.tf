@@ -214,49 +214,49 @@ resource "aws_lambda_function" "lambda_function" {
 }
 
 
-resource "aws_lb" "alb" {
-  name               = "${var.project_name}-${var.environment}-alb" # Used project_name and environment for uniqueness
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb_sg.id]
-  subnets            = [aws_subnet.public_1.id, aws_subnet.public_2.id]
+#resource "aws_lb" "alb" {
+# name               = "${var.project_name}-${var.environment}-alb" # Used project_name and environment for uniqueness
+#  internal           = false
+#  load_balancer_type = "application"
+#  security_groups    = [aws_security_group.alb_sg.id]
+#  subnets            = [aws_subnet.public_1.id, aws_subnet.public_2.id]
 
-  tags = {
-    Name = "${var.project_name}-${var.environment}-alb"
-  }
-}
+#  tags = {
+#    Name = "${var.project_name}-${var.environment}-alb"
+#  }
+#}
 
 
-resource "aws_lb_target_group" "lambda_tg" {
-  name        = "${var.project_name}-lambda-tg" # Used project_name for uniqueness
-  protocol    = "HTTP"
-  target_type = "lambda"
-  vpc_id      = aws_vpc.main.id # For VPC context, though Lambda TG doesn't use subnets/ports
+#resource "aws_lb_target_group" "lambda_tg" {
+#  name        = "${var.project_name}-lambda-tg" # Used project_name for uniqueness
+#  protocol    = "HTTP"
+#  target_type = "lambda"
+#  vpc_id      = aws_vpc.main.id # For VPC context, though Lambda TG doesn't use subnets/ports
 
   # REMOVED: port = 80 as it's not applicable for target_type = "lambda"
-}
+#}
 
-resource "aws_lb_listener" "front_end" {
-  load_balancer_arn = aws_lb.alb.arn
-  port              = "80"
-  protocol          = "HTTP"
+#resource "aws_lb_listener" "front_end" {
+#  load_balancer_arn = aws_lb.alb.arn
+#  port              = "80"
+#  protocol          = "HTTP"
 
-  default_action {
-    target_group_arn = aws_lb_target_group.lambda_tg.arn
-    type             = "forward"
-  }
-}
-
-
-resource "aws_lambda_permission" "allow_alb" {
-  statement_id  = "AllowExecutionFromALB"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.lambda_function.function_name
-  principal     = "elasticloadbalancing.amazonaws.com"
-  source_arn    = aws_lb_listener.front_end.arn
-}
+#  default_action {
+#    target_group_arn = aws_lb_target_group.lambda_tg.arn
+#    type             = "forward"
+#  }
+#}
 
 
-output "alb_dns_name" {
-  value = aws_lb.alb.dns_name
-}
+#resource "aws_lambda_permission" "allow_alb" {
+#  statement_id  = "AllowExecutionFromALB"
+#  action        = "lambda:InvokeFunction"
+#  function_name = aws_lambda_function.lambda_function.function_name
+#  principal     = "elasticloadbalancing.amazonaws.com"
+#  source_arn    = aws_lb_listener.front_end.arn
+#}
+
+
+#output "alb_dns_name" {
+#  value = aws_lb.alb.dns_name
+#}
