@@ -35,7 +35,6 @@ RANDOM_HEX = str(uuid.uuid4())[:8]
 
 # Derived names for backend resources
 S3_STATE_BUCKET_NAME = f"{PROJECT_NAME}-tfstate-{RANDOM_HEX}"
-#DDB_LOCK_TABLE_NAME = f"{PROJECT_NAME}-tf-lock-{RANDOM_HEX}"
 
 # Define the literal string for S3 bucket interpolation for Gemini
 S3_LAMBDA_CODE_BUCKET_TF_REF = "$${{aws_s3_bucket.lambda_code_bucket.id}}"
@@ -154,7 +153,7 @@ This file should define **ONLY** the AWS resources (`aws_s3_bucket`, `aws_dynamo
 **IMPORTANT: DO NOT include a `terraform {{ backend ... }}` block or any `provider` block in this file.** This file's sole purpose is to define resources to be created, not to configure Terraform's own state backend or AWS provider.
 Ensure S3 bucket versioning and server-side encryption (AES256) are enabled.
 **For public access blocking, create a separate `aws_s3_bucket_public_access_block` resource and explicitly link it to the S3 state bucket.** Make sure to block all public access settings (block_public_acls, block_public_policy, ignore_public_acls, restrict_public_buckets). DO NOT configure public access blocking directly within the `aws_s3_bucket` resource itself.
-#The DynamoDB table should be named `{DDB_LOCK_TABLE_NAME}` and have `LockID` as the primary key with PAY_PER_REQUEST billing mode.
+
 The S3 bucket should be named `{S3_STATE_BUCKET_NAME}`.
 The S3 bucket should also have `force_destroy = true` for easy cleanup in development.
 **Include Terraform output blocks for the S3 bucket name (named `terraform_state_bucket_name`) and the DynamoDB table name (named `terraform_lock_table_name`).**
@@ -185,7 +184,7 @@ IAM role and policy for the Lambda function with basic execution permissions (Cl
 
 An S3 bucket for storing the Lambda deployment package (e.g., {PROJECT_NAME}-lambda-code-${{data.aws_caller_identity.current.account_id}}).
 
-The main.tf should also contain the Terraform backend configuration, referencing the S3 bucket {S3_STATE_BUCKET_NAME} # and DynamoDB table {DDB_LOCK_TABLE_NAME} created in the previous step.
+The main.tf should also contain the Terraform backend configuration, referencing the S3 bucket {S3_STATE_BUCKET_NAME}.
 
 Variables for aws_region (default: {AWS_REGION}), project_name (default: {PROJECT_NAME}), and environment (default: development).
 
@@ -470,7 +469,6 @@ def main():
     print("\n--- Deployment Automation Script Finished ---")
     print("Please check your GitHub Actions workflow for deployment status.")
     print(f"\nYour S3 state bucket: {S3_STATE_BUCKET_NAME}")
-    #print(f"Your DynamoDB lock table: {DDB_LOCK_TABLE_NAME}")
     print(f"Your GitHub Repo: {GITHUB_REPO_URL}")
 
 if __name__ == "__main__":
